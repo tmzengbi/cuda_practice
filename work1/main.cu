@@ -22,16 +22,19 @@ __global__ void calc(/*double *A, double *x, */double *y) {
 #undef x
 }
 
-#define cudaWork(work) \
-    do { \
-        work; \
-        cudaError_t err = cudaGetLastError(); \
-        if(err) { \
-            printf("error occur in line %d, %s\n", __LINE__, cudaGetErrorString(err)); \
-            exit(EXIT_FAILURE); \
-        } \
-    } while(0);
-
+#ifdef NDEBUG
+    #define cudaWork(work) work
+#else
+    #define cudaWork(work) \
+        do { \
+            work; \
+            cudaError_t err = cudaGetLastError(); \
+            if(err) { \
+                printf("error occur in line %d, %s\n", __LINE__, cudaGetErrorString(err)); \
+                exit(EXIT_FAILURE); \
+            } \
+        } while(0)
+#endif
 int main() {
     double *y, *res;
     res = (double*) malloc(sizeof(double) * N);
