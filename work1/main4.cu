@@ -42,12 +42,12 @@ int main() {
     float *y, *res;
     res = (float*) malloc(sizeof(float) * N);
     cudaWork(cudaMalloc(&y, sizeof(float) * N));
+    cudaFuncSetAttribute(calc, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
     cudaEvent_t start, stop;
     float t = 0;
     cudaWork(cudaEventCreate(&start));
     cudaWork(cudaEventCreate(&stop));
     cudaWork(cudaEventRecord(start));
-    cudaFuncSetAttribute(calc, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
     cudaWork((calc<<<2, 16, N * sizeof(float)>>>(y)));
     cudaWork(cudaEventRecord(stop));
     cudaWork(cudaEventSynchronize(stop));

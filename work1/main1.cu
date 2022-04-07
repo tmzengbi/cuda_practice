@@ -41,14 +41,14 @@ int main() {
     cudaWork(cudaMalloc(&x, sizeof(float) * N));
     res = (float*) malloc(sizeof(float) * N);
     cudaWork(cudaMalloc(&y, sizeof(float) * N));
+    for(int i = 0; i < N; ++ i)
+        x_host[i] = log(sqrt(i * i - i + float(2.0)));
+    cudaWork(cudaMemcpy(x, x_host, sizeof(float) * N, cudaMemcpyHostToDevice));
     cudaEvent_t start, stop;
     float t = 0;
     cudaWork(cudaEventCreate(&start));
     cudaWork(cudaEventCreate(&stop));
     cudaWork(cudaEventRecord(start));
-    for(int i = 0; i < N; ++ i)
-        x_host[i] = log(sqrt(i * i - i + float(2.0)));
-    cudaWork(cudaMemcpy(x, x_host, sizeof(float) * N, cudaMemcpyHostToDevice));
     cudaWork((calc<<<2,16>>>(x, y)));
     cudaWork(cudaEventRecord(stop));
     cudaWork(cudaEventSynchronize(stop));
