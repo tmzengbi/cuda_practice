@@ -15,7 +15,7 @@ __global__ void calc(/*float *A, float *x, */float *y) {
     int tid = threadIdx.x + blockIdx.x * blockDim.x;
     int step = blockDim.x * gridDim.x;
 #define A(i,j) (i - 0.1 * j + 1)
-#define x(i) log(sqrt(i * i - i + 2.0));
+#define x(i) logf(sqrtf(i * i - i + 2.0));
     for(int i = tid; i < N; i += step)
         for(int j = 0; j < N; ++ j)
             // y[i] += A[idA] * x[j];
