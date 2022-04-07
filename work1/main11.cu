@@ -2,7 +2,6 @@
 #include <cstdio>
 
 const int N = 1 << 14;
-const int threadTot = 1024;
 
 /**
  * @brief using global memory
@@ -12,9 +11,12 @@ __global__ void calc(/*double *A, double *x, */double *y) {
     // for(int i = 0; i < N; ++ i)
     //     for(int j = 0; j < N; ++ j)
     //         y[i] += A[i][j] * x[j];
+    // printf("%d %d %d %d\n",blockDim.x, blockIdx.x, gridDim.x, threadIdx.x);
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    int step = blockDim.x * gridDim.x;
 #define A(i,j) (i - 0.1 * j + 1)
-#define x(i) logf(sqrtf(i * i - i + 2.0))
-    for(int i = threadIdx.x; i < N; i += blockDim.x)
+#define x(i) log(sqrt(i * i - i + 2.0));
+    for(int i = tid; i < N; i += step)
         for(int j = 0; j < N; ++ j)
             // y[i] += A[idA] * x[j];
             y[i] += A(i,j) * x(j);
@@ -44,7 +46,7 @@ int main() {
     cudaWork(cudaEventCreate(&start));
     cudaWork(cudaEventCreate(&stop));
     cudaWork(cudaEventRecord(start));
-    calc<<<1,threadTot>>>(y);cudaWork();
+    cudaWork((calc<<<2,16>>>(y)));
     cudaWork(cudaEventRecord(stop));
     cudaWork(cudaEventSynchronize(stop));
     cudaWork(cudaEventElapsedTime(&t, start, stop));
@@ -55,4 +57,5 @@ int main() {
     
     cudaFree(y);
     free(res);
+    
 }

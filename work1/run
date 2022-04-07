@@ -1,0 +1,26 @@
+#!/bin/bash
+#usage
+#./run
+id=$1
+shift
+out=$1
+shift
+
+executeFile="main$id"
+sourceFile="$executeFile.cu"
+
+echo "compiling ----------------------------"
+nvcc $sourceFile -o $executeFile
+if [[ $? -ne 0 ]]; then
+    echo "compile failed"
+    exit 1
+fi
+echo "copmile successfully"
+echo "running ----------------------------"
+
+if [[ -n $out ]]; then
+    ./$executeFile > $out
+else
+    ./$executeFile
+fi
+rm $executeFile
