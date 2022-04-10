@@ -1,8 +1,3 @@
-## update
-### update 2022/4/7
-wu-kan 博客说到只统计 kernel 的操作时间，不统计 memcpy 的时间。我觉得有一定道理。因此代码进行了小规模调整。
-
-
 ## 任务
 使用下面一种或多种优化方法完成 CUDA 的矩阵向量乘法 $y = A \times x$, 其中 $A$ 是 $2^14 \times 2^14$ 的方阵, $x$ 是 $2^14$ 维向量。假设矩阵 $A$ 的元素为 $a_{ij}=i - 0.1 \times j + 1$, 向量 $x$ 的元素为 $b_i = \log\sqrt{i\times i - i + 2}$ 
 
@@ -19,7 +14,7 @@ GeForce rtx 3060 laptop 115w，cuda on wsl,**其中，所有的核函数都使�
     
 其中单精度耗费时间 1617ms，双精度耗费时间 7729ms
 
-但是实际上传输延迟似乎没有想象中那么大，使用单精度，如果提前在 host 中计算好 $x$，只需要 1183ms 就可以完成。
+但是实际上传输延迟似乎没有想象中那么大，使用单精度，如果提前在 host 中计算好 $x$，只需要 1122ms 就可以完成。
 
 ### 使用合并访存
 
@@ -27,7 +22,7 @@ GeForce rtx 3060 laptop 115w，cuda on wsl,**其中，所有的核函数都使�
 
 ### 使用 constant memory 存放向量
 
-cuda 提供了 64 kb 的 constant memory，恰好是 $2^{14}$ 个 float 变量的大小，可以考虑将所有 $x$ 都存入 constant memory 中，只需要 835ms 计算完毕。
+cuda 提供了 64 kb 的 constant memory，恰好是 $2^{14}$ 个 float 变量的大小，可以考虑将所有 $x$ 都存入 constant memory 中，只需要 847ms 计算完毕。
 
 ### 使用 shared memory 存放向量和矩阵
 
@@ -36,7 +31,6 @@ cuda 提供了 64 kb 的 constant memory，恰好是 $2^{14}$ 个 float 变量�
 除此之外，使用大于 48kb 的 shared memory 必须使用 dynamic allocate。使用 shared memory 的计算时间 916ms
 
 ### 使用 warp 直接访问寄存器
-
 
 ### 使用 cublasSgemv
 

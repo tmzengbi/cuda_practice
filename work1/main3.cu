@@ -36,20 +36,19 @@ __global__ void calc(/*float *A, float *x,*/ float *y) {
             } \
         } while(0)
 #endif
-
 int main() {
     float *x_host, *y, *res;
     x_host = (float*) malloc(sizeof(float) * N);
     res = (float*) malloc(sizeof(float) * N);
     cudaWork(cudaMalloc(&y, sizeof(float) * N));
-    for(int i = 0; i < N; ++ i)
-        x_host[i] = log(sqrt(i * i - i + 2.0));
-    cudaWork(cudaMemcpyToSymbol(x_constDevice, x_host, sizeof(float) * N));
     cudaEvent_t start, stop;
     float t = 0;
     cudaWork(cudaEventCreate(&start));
     cudaWork(cudaEventCreate(&stop));
     cudaWork(cudaEventRecord(start));
+    for(int i = 0; i < N; ++ i)
+        x_host[i] = log(sqrt(i * i - i + 2.0));
+    cudaWork(cudaMemcpyToSymbol(x_constDevice, x_host, sizeof(float) * N));
     cudaWork((calc<<<2,16>>>(y)));
     cudaWork(cudaEventRecord(stop));
     cudaWork(cudaEventSynchronize(stop));
